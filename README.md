@@ -24,7 +24,7 @@ graph TD
 
   click jpeg "https://github.com/geostandards-ch/cog-best-practices#lossy-visual-image"
   click jpeg-mask "https://github.com/geostandards-ch/cog-best-practices#lossy-visual-image"
-  click lerc_lossy https://github.com/geostandards-ch/cog-best-practices#lossy-numerical-raster"
+  click lerc_lossy "https://github.com/geostandards-ch/cog-best-practices#lossy-numerical-raster"
   click lerc_lossless "https://github.com/geostandards-ch/cog-best-practices#lossless-raster"
 ```
 
