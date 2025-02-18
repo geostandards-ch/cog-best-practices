@@ -1,10 +1,17 @@
 # About
-This document summarizes **best practice on publishing cloud optimized data to BGDI**
+This document summarizes **best practices for creating COG (Cloud Optimized GeoTIFF) files based on various use cases.**
+
+## Table of content
+
+<details>
+<summary>Expand contents</summary>
+- [TBD](#TBD)
+</details>
 
 # Choose your case
 ```mermaid
 graph TD
-  start[*Start*: Generate<br> cloud-optimized GeoTIFF] --> purpose{What's the main purpose?}
+  start[*Start*: Generate<br> Cloud Optimized GeoTIFF] --> purpose{What's the main purpose?}
 
   purpose -->|View Data| view{Data Type?}
   purpose -->|Analyze Data| analyze{limited loss acceptable? e.g. cm instead of µm}
@@ -22,7 +29,7 @@ graph TD
   analyze -->|Yes| lerc_lossy[Use LERC_ZSTD compression<br>-co COMPRESS=LERC_ZSTD]
   analyze -->|No| lerc_lossless[Use LERC_ZSTD compression<br>-co COMPRESS=LERC_ZSTD]
 
-  click jpeg "https://github.com/geostandards-ch/cog-best-practices#lossy-visual-image"
+  click jpeg "https://github.com/geostandards-ch/cog-best-practices/tree/dev#lossy-visual-image"
   click jpeg-mask "https://github.com/geostandards-ch/cog-best-practices#lossy-visual-image"
   click lerc_lossy "https://github.com/geostandards-ch/cog-best-practices#lossy-numerical-raster"
   click lerc_lossless "https://github.com/geostandards-ch/cog-best-practices#lossless-raster"
@@ -30,7 +37,7 @@ graph TD
 
 
 # Raster
-Apply the optimization steps according to the use case and publish cloud-optimized GeoTIFF [COG](https://cogeo.org) using a recent version of [gdal](https://gdal.org). Windows users may use the OSGeo4WShell provided by [QGIS](https://qgis.org).
+Apply the optimization steps according to the use case and create Cloud Optimized GeoTIFF [COG](https://cogeo.org) using a recent version of [gdal](https://gdal.org). Windows users may use the OSGeo4WShell provided by [QGIS](https://qgis.org).
 
 ## lossless raster
 
