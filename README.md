@@ -29,7 +29,7 @@ graph TD
   analyze -->|Yes| lerc_lossy[Use LERC_ZSTD compression<br>-co COMPRESS=LERC_ZSTD]
   analyze -->|No| lerc_lossless[Use LERC_ZSTD compression<br>-co COMPRESS=LERC_ZSTD]
 
-  click jpeg "https://github.com/geostandards-ch/cog-best-practices/tree/dev#lossy-visual-image"
+  click jpeg "https://github.com/geostandards-ch/cog-best-practices#lossy-visual-image"
   click jpeg-mask "https://github.com/geostandards-ch/cog-best-practices#lossy-visual-image"
   click lerc_lossy "https://github.com/geostandards-ch/cog-best-practices#lossy-numerical-raster"
   click lerc_lossless "https://github.com/geostandards-ch/cog-best-practices#lossless-raster"
