@@ -142,7 +142,7 @@ Here's how you can contribute:
 To contribute:
 1. Fork this repository
 2. Create a new branch for your changes
-3. Make your changes and commit them
+3. Make your changes and commit them them to the 'dev' branch
 4. Submit a pull request with a clear description of your modifications
 
 Remember, no contribution is too small. Whether it's fixing a typo, adding a use case, or proposing a new best practice, every input helps build a stronger, more knowledgeable Swiss geospatial community.
