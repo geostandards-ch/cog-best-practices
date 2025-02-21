@@ -30,7 +30,7 @@ graph TD
   analyze -->|No| lerc_lossless[Use LERC_ZSTD compression<br>-co COMPRESS=LERC_ZSTD]
 
   click jpeg "https://github.com/geostandards-ch/cog-best-practices#lossy-visual-image"
-  click jpeg-mask "https://github.com/geostandards-ch/cog-best-practices#lossy-visual-image"
+  click jpeg-mask "https://github.com/geostandards-ch/cog-best-practices#lossy-visual-image-with-mask"
   click lerc_lossy "https://github.com/geostandards-ch/cog-best-practices#lossy-numerical-raster"
   click lerc_lossless "https://github.com/geostandards-ch/cog-best-practices#lossless-raster"
 ```
@@ -64,6 +64,14 @@ Apply optimization steps for raster data
 1. compress your data using
     ```
     gdal_translate -a_srs EPSG:2056 -of COG -co COMPRESS=JPEG -co NUM_THREADS=ALL_CPUS -co BIGTIFF=YES -co STATISTICS=YES -co QUALITY=70 ... <input.tif> <output.tif>
+    ```
+
+
+## lossy visual image with mask
+
+1. compress your data using
+    ```
+    gdal_translate -a_srs EPSG:2056 -of COG -co COMPRESS=JPEG -co NUM_THREADS=ALL_CPUS -co BIGTIFF=YES -co STATISTICS=YES -co QUALITY=70 -mask none ... <input.tif> <output.tif>
     ```
 
 ## lossy numerical raster
