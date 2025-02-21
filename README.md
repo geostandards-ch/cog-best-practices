@@ -36,7 +36,7 @@ graph TD
 # Raster
 Apply the optimization steps according to the use case and create Cloud Optimized GeoTIFF [COG](https://cogeo.org) using a recent version of [gdal](https://gdal.org). Windows users may use the OSGeo4WShell provided by [QGIS](https://qgis.org).
 
-#### _Notes on Working with VRT (Virtual Raster)_
+# Virtual Raster Tiles (VRT)
 When dealing with a large number of input files, it's often more efficient to use a VRT (Virtual Raster) approach. This method allows you to create a virtual dataset that combines multiple raster files without actually merging the data. Here's how you can do this:
 
 1. First, set up the options for gdalbuildvrt and gdal_translate:
@@ -66,13 +66,31 @@ It's important to set the `--config GDAL_DISABLE_READDIR_ON_OPEN EMPTY_DIR` opti
 
 This approach is particularly useful when you're working with thousands of input files, as it allows GDAL to efficiently handle the data without trying to load everything into memory at once
 
+## Batch conversion
+
+### Windows: cmd.exe
+
+```cmd
+FOR %f IN ("C:\path\to\folder\*.tif") DO (
+  gdal_translate -of COG  [... params ...]  %f C:\path\to\output\%~nf.tif
+)
+```
+
+### Linux: bash
+
+```bash
+for f in /path/to/folder/*.tif
+  do gdal_translate -of COG  [... params ...]  $f /path/to/output/$(basename -s .tif $f).tif
+done
+```
+
 ## lossless raster
 
 Apply optimization steps for raster data
 1. prepare input data at a reasonable precision (i.e. `cm` instead of `µm` or `nm` i.e. in the data source)
 2. compress your data using
     ```
-    gdal_translate -a_srs EPSG:2056 -of COG -co COMPRESS=LERC_ZSTD -co LEVEL=22 -co NUM_THREADS=ALL_CPUS -co BIGTIFF=YES -co STATISTICS=YES ... -ot <datatype> <input.tif> <output.tif>
+    gdal_translate -a_srs EPSG:2056 -of COG -co COMPRESS=LERC_ZSTD -co LEVEL=22 -co NUM_THREADS=ALL_CPUS -co BIGTIFF=YES -co STATISTICS=YES -tr <resolution in meter> <resolution in meter> -r Cubic -a_nodata <value>... -ot <datatype> <input.tif> <output.tif>
     ```
     while
     - choosing the appropriate scale and offset for the data if feasible (i.e. scale `cm` instead of `m` using [-a_scale](https://gdal.org/en/stable/programs/gdal_translate.html#cmdoption-gdal_translate-a_scale)) and / or offset (using [-a_offset](https://gdal.org/en/stable/programs/gdal_translate.html#cmdoption-gdal_translate-a_offset)) to better fit the numbers
@@ -90,7 +108,7 @@ Apply optimization steps for raster data
 
 1. compress your data using
     ```
-    gdal_translate -a_srs EPSG:2056 -of COG -co COMPRESS=JPEG -co NUM_THREADS=ALL_CPUS -co BIGTIFF=YES -co STATISTICS=YES -co QUALITY=70 -co BLOCKSIZE=512 -tr <resolution in meter> <resolution in meter> -r Cubic ... <input.tif> <output.tif>
+    gdal_translate -a_srs EPSG:2056 -of COG -co COMPRESS=JPEG -co NUM_THREADS=ALL_CPUS -co BIGTIFF=YES -co STATISTICS=YES -co QUALITY=70  -tr <resolution in meter> <resolution in meter> -r Cubic ... <input.tif> <output.tif>
     ```
 
 
@@ -98,14 +116,14 @@ Apply optimization steps for raster data
 
 1. compress your data using
     ```
-    gdal_translate -a_srs EPSG:2056 -of COG -co COMPRESS=JPEG -co NUM_THREADS=ALL_CPUS -co BIGTIFF=YES -co STATISTICS=YES -co QUALITY=70 -mask -co BLOCKSIZE=512 -tr <resolution in meter> <resolution in meter> -r Cubic none ... <input.tif> <output.tif>
+    gdal_translate -a_srs EPSG:2056 -of COG -co COMPRESS=JPEG -co NUM_THREADS=ALL_CPUS -co BIGTIFF=YES -co STATISTICS=YES -co QUALITY=70 -tr <resolution in meter> <resolution in meter> -r Cubic -mask none  ... <input.tif> <output.tif>
     ```
 
 ## lossy numerical raster
 
 1. compress your data using
     ```
-    gdal_translate -a_srs EPSG:2056 -of COG -co COMPRESS=LERC_ZSTD -co LEVEL=22 -co NUM_THREADS=ALL_CPUS -co BIGTIFF=YES -co STATISTICS=YES -co MAX_Z_ERROR=<threshold> -co BLOCKSIZE=512 -tr <resolution in meter> <resolution in meter> -r Cubic ... -ot <datatype> <input.tif> <output.tif>
+    gdal_translate -a_srs EPSG:2056 -of COG -co COMPRESS=LERC_ZSTD -co LEVEL=22 -co NUM_THREADS=ALL_CPUS -co BIGTIFF=YES -co STATISTICS=YES -co MAX_Z_ERROR=<threshold> -co BLOCKSIZE=512 -tr <resolution in meter> <resolution in meter> -r Cubic -a_nodata <value>... -ot <datatype> <input.tif> <output.tif>
     ```
     while
     - choosing a [threshold](https://gdal.org/en/stable/drivers/raster/cog.html#general-creation-options:~:text=MAX_Z_ERROR) (limited error tolerance i.e. `0.01` for `cm`) for better lossy compression ratio
@@ -135,8 +153,9 @@ Let's work together to optimize our geospatial workflows and make Swiss geograph
 
 For further information and more in-depth explanations of Cloud Optimized GeoTIFFs in context with gdal and related topics, please see the following resources:
 
-*   [1] GDAL COG Driver: [https://gdal.org/drivers/raster/cog.html](https://gdal.org/drivers/raster/cog.html)
-*   [2] GDAL Cloud Optimized GeoTIFF Wiki: [https://trac.osgeo.org/gdal/wiki/CloudOptimizedGeoTIFF](https://trac.osgeo.org/gdal/wiki/CloudOptimizedGeoTIFF)
-*   [3] GeoTIFF Compression Optimization Guide: [https://kokoalberti.com/articles/geotiff-compression-optimization-guide](https://kokoalberti.com/articles/geotiff-compression-optimization-guide)
-*   [4] COG Recipes: [https://github.com/Doctor-Who/cog-recipes?tab=readme-ov-file](https://github.com/Doctor-Who/cog-recipes?tab=readme-ov-file)
-*   [5] Image Compression: [https://wiesehahn.github.io/posts/image_compression/](https://wiesehahn.github.io/posts/image_compression/)
+*   GDAL COG Driver: [https://gdal.org/drivers/raster/cog.html](https://gdal.org/drivers/raster/cog.html)
+*   gdal_translate: [https://gdal.org/en/stable/programs/gdal_translate.html](https://gdal.org/en/stable/programs/gdal_translate.html)
+*   GDAL Cloud Optimized GeoTIFF Wiki: [https://trac.osgeo.org/gdal/wiki/CloudOptimizedGeoTIFF](https://trac.osgeo.org/gdal/wiki/CloudOptimizedGeoTIFF)
+*   GeoTIFF Compression Optimization Guide: [https://kokoalberti.com/articles/geotiff-compression-optimization-guide](https://kokoalberti.com/articles/geotiff-compression-optimization-guide)
+*   COG Recipes: [https://github.com/Doctor-Who/cog-recipes?tab=readme-ov-file](https://github.com/Doctor-Who/cog-recipes?tab=readme-ov-file)
+*   Image Compression: [https://wiesehahn.github.io/posts/image_compression/](https://wiesehahn.github.io/posts/image_compression/)
