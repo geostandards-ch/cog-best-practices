@@ -1,6 +1,6 @@
 # Best Practices for Cloud-Optimized GeoTIFFs (COGs) for the use in Swiss Geospatial Infastructures 
 
-Our goal is to establish and share optimal command line snippets for creating  [Cloud-Optimized GeoTIFFs (COGs)](https://cogeo.org/) within the Swiss geospatial context (aka EPSG 2056 users) via a decision tree.
+Our goal is to establish and share optimal command line snippets for creating  [Cloud-Optimized GeoTIFFs (COGs)](https://cogeo.org/) within the Swiss geospatial context (aka EPSG 2056 users) via a decision tree for  various use cases.
 COGs are standard GeoTIFF files optimized for cloud environments, allowing for efficient access to specific parts of large datasets without downloading entire files.
 
 *Pull Requests Accepted:* This Best Practice Guide is fully community driven. If something is not right, or if you want to contribute a use case, add your tutorial to the implementation list or tell ~~Switzerland~~ the world about the awesome gdal / r snippets you are making available then please [contribute](#contributing).
