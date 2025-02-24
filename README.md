@@ -32,11 +32,8 @@ graph TD
   click lerc_lossless "https://github.com/geostandards-ch/cog-best-practices#lossless-raster"
 ```
 
-
-# Raster
-Apply the optimization steps according to the use case and create Cloud Optimized GeoTIFF [COG](https://cogeo.org) using a recent version of [gdal](https://gdal.org). Windows users may use the OSGeo4WShell provided by [QGIS](https://qgis.org).
-
-# Virtual Raster Tiles (VRT)
+# Workflows
+## Virtual Raster Tiles (VRT)
 When dealing with a large number of input files, it's often more efficient to use a VRT (Virtual Raster) approach. This method allows you to create a virtual dataset that combines multiple raster files without actually merging the data. Here's how you can do this:
 
 1. First, set up the options for gdalbuildvrt and gdal_translate:
@@ -83,6 +80,8 @@ for f in /path/to/folder/*.tif
   do gdal_translate -of COG  [... params ...]  $f /path/to/output/$(basename -s .tif $f).tif
 done
 ```
+# Raster
+Apply the optimization steps according to the use case and create Cloud Optimized GeoTIFF [COG](https://cogeo.org) using a recent version of [gdal](https://gdal.org). Windows users may use the OSGeo4WShell provided by [QGIS](https://qgis.org).
 
 ## lossless raster
 
