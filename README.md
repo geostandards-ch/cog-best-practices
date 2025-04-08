@@ -13,11 +13,11 @@ graph TD
   purpose -->|View Data| view{Data Type?}
   purpose -->|Analyze Data| analyze{limited loss acceptable? e.g. cm instead of µm}
 
-  view -->|8-bit<br>RGB/RGBa/gray| view8{Transparency Required?}
-  view -->|16-bit<br>RGB/RGBa/gray| view16{Transparency Required?}
+  view -->|8-bit<br>RGB/RGBa/grey| view8{Transparency Required?}
+  view -->|16-bit<br>RGB/RGBa/grey| view16{Transparency Required?}
   view -->|Multi-Band| analyze
 
-  view8 -->|Yes| jpeg-mask[Use JPEG compression with mask<br>-co COMPRESS=JPEG<br>-mask none]
+  view8 -->|Yes| jpeg-mask[Use JPEG compression<br>while creating alpha mask on-the-fly<br>-co COMPRESS=JPEG]
   view8 -->|No| jpeg[Use JPEG compression<br>-co COMPRESS=JPEG]
 
   view16 -->|No| jpeg[Use JPEG compression<br>-co COMPRESS=JPEG]
@@ -103,6 +103,15 @@ Apply optimization steps for raster data
 - _has been [developed and published by ESRI](https://github.com/esri/lerc/) and is supported in their products_
 - _supported in STAC-browser v3.4_
 
+## lossy numerical raster
+
+1. compress your data using
+    ```
+    gdal_translate -a_srs EPSG:2056 -of COG -co COMPRESS=LERC_ZSTD -co LEVEL=22 -co NUM_THREADS=ALL_CPUS -co BIGTIFF=YES -co STATISTICS=YES -co MAX_Z_ERROR=<threshold> -tr <resolution in meter> <resolution in meter> -r Cubic -a_nodata <value> -ot <datatype> <input.tif> <output.tif>
+    ```
+    while
+    - choosing a [threshold](https://gdal.org/en/stable/drivers/raster/cog.html#general-creation-options:~:text=MAX_Z_ERROR) (limited error tolerance i.e. `0.01` for `cm`) for better lossy compression ratio
+
 ## lossy visual image
 
 1. compress your data using
@@ -110,22 +119,27 @@ Apply optimization steps for raster data
     gdal_translate -a_srs EPSG:2056 -of COG -co COMPRESS=JPEG -co NUM_THREADS=ALL_CPUS -co BIGTIFF=YES -co STATISTICS=YES -co QUALITY=70  -tr <resolution in meter> <resolution in meter> -r Cubic <input.tif> <output.tif>
     ```
 
-
-## lossy visual image with mask
-
-1. compress your data using
-    ```
-    gdal_translate -a_srs EPSG:2056 -of COG -co COMPRESS=JPEG -co NUM_THREADS=ALL_CPUS -co BIGTIFF=YES -co STATISTICS=YES -co QUALITY=70 -tr <resolution in meter> <resolution in meter> -r Cubic -mask none <input.tif> <output.tif>
-    ```
-
-## lossy numerical raster
+## lossy visual image with transparency
 
 1. compress your data using
     ```
-    gdal_translate -a_srs EPSG:2056 -of COG -co COMPRESS=LERC_ZSTD -co LEVEL=22 -co NUM_THREADS=ALL_CPUS -co BIGTIFF=YES -co STATISTICS=YES -co MAX_Z_ERROR=<threshold> -co BLOCKSIZE=512 -tr <resolution in meter> <resolution in meter> -r Cubic -a_nodata <value> -ot <datatype> <input.tif> <output.tif>
+    gdalwarp -s_srs EPSG:2056 -of COG -co COMPRESS=JPEG -co NUM_THREADS=ALL_CPUS -co BIGTIFF=YES -co STATISTICS=YES -co QUALITY=70 -tr <resolution in meter> <resolution in meter> -r Cubic -multi -wo NUM_THREADS=ALL_CPUS -dstalpha -srcnodata <value> <input.tif> <output.tif>
     ```
     while
-    - choosing a [threshold](https://gdal.org/en/stable/drivers/raster/cog.html#general-creation-options:~:text=MAX_Z_ERROR) (limited error tolerance i.e. `0.01` for `cm`) for better lossy compression ratio
+    - using [`-dstalpha`](https://gdal.org/en/stable/programs/gdalwarp.html#cmdoption-gdalwarp-dstalpha)
+    - setting [`-srcnodata`](https://gdal.org/en/stable/programs/gdalwarp.html#cmdoption-gdalwarp-srcnodata) to the nodata value per band as eg `"0 0 0"` see [explanation below](#notes-on-alpha-channel)
+    - or if the source data already has an alpha band:
+      - setting [`-srcalpha`](https://gdal.org/en/stable/programs/gdalwarp.html#cmdoption-gdalwarp-srcalpha)
+
+    result:
+    - grey+alpha or RGB+alpha image representing the data
+
+#### _Notes on alpha channel_
+- transparency is stored in the extra alpha channel
+- it can be created on the fly from _nodata_ at the source (i.e. [`-srcnodata "0 0 0"`](https://gdal.org/en/stable/programs/gdalwarp.html#cmdoption-gdalwarp-srcnodata) for black in RGB source image)
+- unused input bands (NIR, etc.) may be dropped (i.e. [`-nosrcalpha`](https://gdal.org/en/stable/programs/gdalwarp.html#cmdoption-gdalwarp-nosrcalpha) [`-srcband 2 -srcband 3 -srcband 4`](https://gdal.org/en/stable/programs/gdalwarp.html#cmdoption-gdalwarp-srcband) to generate RGB from NRGB)
+- it can also be created by clipping using a [`cutline`](https://gdal.org/en/stable/programs/gdalwarp.html#cmdoption-gdalwarp-cutline) (i.e. polygon from a file)
+- even clip offsetting is possible (see [`-cblend`](https://gdal.org/en/stable/programs/gdalwarp.html#cmdoption-gdalwarp-cblend))
 
 ## Contributing
 
