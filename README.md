@@ -107,7 +107,7 @@ Apply optimization steps for raster data
 
 1. compress your data using
     ```
-    gdal_translate -a_srs EPSG:2056 -of COG -co COMPRESS=LERC_ZSTD -co LEVEL=22 -co NUM_THREADS=ALL_CPUS -co BIGTIFF=YES -co STATISTICS=YES -co MAX_Z_ERROR=<threshold> -co BLOCKSIZE=512 -tr <resolution in meter> <resolution in meter> -r Cubic -a_nodata <value> -ot <datatype> <input.tif> <output.tif>
+    gdal_translate -a_srs EPSG:2056 -of COG -co COMPRESS=LERC_ZSTD -co LEVEL=22 -co NUM_THREADS=ALL_CPUS -co BIGTIFF=YES -co STATISTICS=YES -co MAX_Z_ERROR=<threshold> -tr <resolution in meter> <resolution in meter> -r Cubic -a_nodata <value> -ot <datatype> <input.tif> <output.tif>
     ```
     while
     - choosing a [threshold](https://gdal.org/en/stable/drivers/raster/cog.html#general-creation-options:~:text=MAX_Z_ERROR) (limited error tolerance i.e. `0.01` for `cm`) for better lossy compression ratio
@@ -127,7 +127,7 @@ Apply optimization steps for raster data
     ```
     while
     - using [`-dstalpha`](https://gdal.org/en/stable/programs/gdalwarp.html#cmdoption-gdalwarp-dstalpha)
-    - setting [`-srcnodata`](https://gdal.org/en/stable/programs/gdalwarp.html#cmdoption-gdalwarp-srcnodata) to the nodata value
+    - setting [`-srcnodata`](https://gdal.org/en/stable/programs/gdalwarp.html#cmdoption-gdalwarp-srcnodata) to the nodata value per band as eg `"0 0 0"` see [explanation below](#notes-on-alpha-channel)
     - or if the source data already has an alpha band:
       - setting [`-srcalpha`](https://gdal.org/en/stable/programs/gdalwarp.html#cmdoption-gdalwarp-srcalpha)
 
